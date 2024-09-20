@@ -83,17 +83,17 @@ WORKDIR /home/${USER_NAME}
 RUN set -x \
   && deps=" \
   python3 \ 
-  python3-distutils \
+  python3-distutils-extra \
   python3-venv \ 
   python-is-python3 \
+  python3-pip \
   " \
   && sudo apt-get update && sudo apt-get install -y ${deps} --no-install-recommends \
   && sudo rm -rf /var/lib/apt/lists/* 
 
  # Install Python dependencies. Add to the pip install list as required.
-RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python \
-  && python -m pip install aws-cdk-lib \
-  && python -m pip install git-remote-codecommit
+RUN python -m pip install --break-system-package aws-cdk-lib \
+  && python -m pip install --break-system-packages git-remote-codecommit 
 
 # Install Node.js.
 RUN curl -sSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - \
@@ -120,7 +120,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
 
 # AWS CDK does not support SSO, so install a utility to create legacy AWS CLI profiles
 # from SSO credentials. Run `yawsso` to copy credentials after logging in to SSO.
-RUN python -m pip install yawsso
+RUN python -m pip install --break-system-packages yawsso
 
 # Add Python utilities to PATH
 RUN echo "export PATH=$PATH:~/.local/bin" >> ~/.bashrc
